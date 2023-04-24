@@ -23,41 +23,47 @@
             <Font name="System Bold" size="22.0" />
          </font>
       </Label>
-      <Label layoutX="316.0" layoutY="222.0" prefHeight="17.0" prefWidth="105.0" text="email">
+      <Label layoutX="216.0" layoutY="230.0" prefHeight="18.0" prefWidth="76.0" text="Email:">
          <font>
             <Font name="Arial" size="13.0" />
          </font>
       </Label>
-      <Label layoutX="312.0" layoutY="290.0" text="password">
+      <Label layoutX="216.0" layoutY="287.0" text="Password:">
          <font>
             <Font name="Arial" size="13.0" />
          </font>
       </Label>
-      <TextField fx:id="regName" layoutX="312.0" layoutY="245.0" prefHeight="26.0" prefWidth="187.0" promptText="Enter email" />
-      <PasswordField fx:id="regPassword" layoutX="312.0" layoutY="314.0" prefHeight="26.0" prefWidth="186.0" promptText="Enter password" />
-      <Label layoutX="313.0" layoutY="360.0" text="start date">
+      <Label layoutX="216.0" layoutY="344.0" text="Student number:">
          <font>
             <Font name="Arial" size="13.0" />
          </font>
       </Label>
-      <DatePicker fx:id="regStartDate" layoutX="312.0" layoutY="387.0" promptText="select start date" />
+      <Label layoutX="215.0" layoutY="394.0" text="Start date:">
+         <font>
+            <Font name="Arial" size="13.0" />
+         </font>
+      </Label>
+      <Label layoutX="215.0" layoutY="132.0" prefHeight="17.0" prefWidth="76.0" text="First name:">
+         <font>
+            <Font name="Arial" size="13.0" />
+         </font>
+      </Label>
+      <Label layoutX="215.0" layoutY="176.0" prefHeight="17.0" prefWidth="105.0" text="Last name:">
+         <font>
+            <Font name="Arial" size="13.0" />
+         </font>
+      </Label>
+      <TextField fx:id="regFirstname" layoutX="317.0" layoutY="128.0" prefHeight="26.0" prefWidth="200.0" promptText="Enter first name" />
+      <TextField fx:id="regLastname" layoutX="318.0" layoutY="171.0" prefHeight="26.0" prefWidth="200.0" promptText="Enter last name" />
+      <TextField fx:id="regName" layoutX="318.0" layoutY="226.0" prefHeight="26.0" prefWidth="200.0" promptText="Enter email" />
+      <PasswordField fx:id="regPassword" layoutX="318.0" layoutY="282.0" prefHeight="26.0" prefWidth="200.0" promptText="Enter password" />
+      <TextField fx:id="regstudentNumber" layoutX="318.0" layoutY="339.0" prefHeight="26.0" prefWidth="200.0" promptText="Enter student number (optional)" />
+      <DatePicker fx:id="regStartDate" layoutX="317.0" layoutY="390.0" prefWidth="200.0" promptText="Select start date" />
       <Button fx:id="regSubmitButton" layoutX="391.0" layoutY="436.0" mnemonicParsing="false" onAction="#onRegisterUser" prefHeight="26.0" prefWidth="105.0" style="-fx-background-color: #6610f2;" text="Register" textFill="WHITE">
          <font>
             <Font name="Arial Bold" size="13.0" />
          </font>
       </Button>
-      <Label layoutX="316.0" layoutY="103.0" prefHeight="17.0" prefWidth="76.0" text="firstname">
-         <font>
-            <Font name="Arial" size="13.0" />
-         </font>
-      </Label>
-      <Label layoutX="316.0" layoutY="162.0" prefHeight="17.0" prefWidth="105.0" text="lastname">
-         <font>
-            <Font name="Arial" size="13.0" />
-         </font>
-      </Label>
-      <TextField fx:id="regFirstname" layoutX="317.0" layoutY="128.0" prefHeight="26.0" prefWidth="186.0" promptText="firstname" />
-      <TextField fx:id="regLastname" layoutX="316.0" layoutY="186.0" prefHeight="26.0" prefWidth="186.0" promptText="lastname" />
       <Hyperlink layoutX="299.0" layoutY="472.0" onAction="#onNavigateToLogin" prefHeight="23.0" prefWidth="214.0" text="Already have an account? Login" textFill="#6610f2">
          <font>
             <Font name="Arial Bold" size="13.0" />

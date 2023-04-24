@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="518.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.tuni.prog3.sisu.LoginController">
+<AnchorPane prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.tuni.prog3.sisu.LoginController">
    <children>
       <VBox layoutY="-1.0" prefHeight="518.0" prefWidth="226.0" style="-fx-background-color: #6610f2;" />
       <Label layoutX="314.0" layoutY="26.0" prefHeight="25.0" prefWidth="187.0" text="Tampere University" textFill="#6610f2">
@@ -22,12 +22,12 @@
             <Font name="Arial Bold" size="26.0" />
          </font>
       </Label>
-      <Label layoutX="314.0" layoutY="162.0" prefHeight="25.0" prefWidth="135.0" text="email">
+      <Label layoutX="314.0" layoutY="162.0" prefHeight="25.0" prefWidth="135.0" text="Email">
          <font>
             <Font name="Arial" size="15.0" />
          </font>
       </Label>
-      <Label layoutX="314.0" layoutY="239.0" prefHeight="17.0" prefWidth="98.0" text="password">
+      <Label layoutX="314.0" layoutY="239.0" prefHeight="17.0" prefWidth="98.0" text="Password">
          <font>
             <Font name="Arial" size="16.0" />
          </font>
@@ -39,7 +39,7 @@
             <Font name="Arial Bold" size="15.0" />
          </font>
       </Button>
-      <Hyperlink layoutX="299.0" layoutY="373.0" onAction="#onNavigateToRegisterPage" prefHeight="22.0" prefWidth="218.0" text="don't have an account? sign up" textFill="#6610f2">
+      <Hyperlink layoutX="299.0" layoutY="373.0" onAction="#onNavigateToRegisterPage" prefHeight="22.0" prefWidth="218.0" text="Don't have an account? Sign up" textFill="#6610f2">
          <font>
             <Font name="Arial Bold" size="13.0" />
          </font>

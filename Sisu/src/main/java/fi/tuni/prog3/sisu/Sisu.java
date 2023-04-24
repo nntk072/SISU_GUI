@@ -1,9 +1,11 @@
 package fi.tuni.prog3.sisu;
 
-import javafx.fxml.FXMLLoader;
+import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -13,8 +15,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 /**
  * JavaFX Sisu
@@ -43,8 +43,8 @@ public class Sisu extends Application {
 
         // root here was defined above
         Scene authenticatedUserScene = new Scene(root, 800, 500);
-        Scene loginScene = new Scene(fxmlLoginLoader.load(), 800, 500);
-        Scene registerScene = new Scene(fxmlRegisterLoader.load(), 800, 500);
+        Scene loginScene = new Scene(fxmlLoginLoader.load(), 600, 500);
+        Scene registerScene = new Scene(fxmlRegisterLoader.load(), 607, 562);
 
         LoginController loginController = fxmlLoginLoader.getController();
         loginController.setSceneAfterAuthentication(authenticatedUserScene);
@@ -70,9 +70,12 @@ public class Sisu extends Application {
                 VBox userDetails = new VBox();
                 userDetails.setPrefWidth(250);
                 userDetails.setPadding(new Insets(10, 10, 10, 10));
-                userDetails.getChildren().addAll(new Label("Welcome " + loggedinUser.getFirstname()),
-                        new Label("email: " + loggedinUser.getEmail()),
-                        new Label("Student Number: " + loggedinUser.getStudentNumber()));
+                userDetails.getChildren().addAll(
+                        new Label("Welcome " + loggedinUser.getFirstname()),
+                        new Label("Email: " + loggedinUser.getEmail()),
+                        new Label("Student Number: " + loggedinUser.getStudentNumber()),
+                        new Label("Start Date: " + loggedinUser.getStartingDate())
+                );
                 root.setRight(userDetails);
             }
 
@@ -82,9 +85,12 @@ public class Sisu extends Application {
                 VBox userDetails = new VBox();
                 userDetails.setPrefWidth(250);
                 userDetails.setPadding(new Insets(10, 10, 10, 10));
-                userDetails.getChildren().addAll(new Label("Welcome " + registeredUser.getFirstname()),
+                userDetails.getChildren().addAll(
+                        new Label("Welcome " + registeredUser.getFirstname()),
                         new Label("email: " + registeredUser.getEmail()),
-                        new Label("Student Number: " + registeredUser.getStudentNumber()));
+                        new Label("Student Number: " + registeredUser.getStudentNumber()),
+                        new Label("Start Date: " + registeredUser.getStartingDate())
+                );
                 root.setRight(userDetails);
             }
         });
