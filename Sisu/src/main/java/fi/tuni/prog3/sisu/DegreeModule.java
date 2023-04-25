@@ -30,6 +30,7 @@ Modules that directly contain courses refer to courses by their groupId’s.
  */
 package fi.tuni.prog3.sisu;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.IOException;
@@ -37,6 +38,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,11 +47,14 @@ import java.util.logging.Logger;
  */
 public abstract class DegreeModule {
 
+    
+
     private String name;
     private String id;
     private String groupId;
     private int minCredits;
     private ArrayList<Module> modules;
+    private ArrayList<DegreeModule> module_list;
 
     /**
      * Returns the modules of the Module or Course.
@@ -113,35 +118,5 @@ public abstract class DegreeModule {
     public int getMinCredits() {
         return this.minCredits;
     }
-    /*
-    private void moduleRead(DegreeModule degree) throws MalformedURLException {
-        // Read from https://sis-tuni.funidata.fi/kori/api/modules/otm-1d25ee85-df98-4c03-b4ff-6cad7b09618b
-        var id = degree.getId();
-        var url_path = "https://sis-tuni.funidata.fi/kori/api/modules/otm-" + id;
-        var json = getJsonObjectFromApi(url_path);
-
-        // Read the modules from the json object
-        var modules = json.getAsJsonArray("modules");
-    }
-
-    @Override
-    public JsonObject getJsonObjectFromApi(String urlString) {
-        try {
-            URL url = new URL(urlString);
-
-            //Read the words from json file from url
-            String jsonStrings = new String(url.openStream().readAllBytes(), "UTF-8");
-
-            //Create a json object from the contents
-            JsonObject json = JsonParser.parseString(jsonStrings).getAsJsonObject();
-            return json;
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(DegreeModule.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(DegreeModule.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-    */
-
+    
 }

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -33,12 +35,15 @@ import javafx.stage.Stage;
 public class Sisu extends Application {
 
     private static TreeMap<String, String> degreeProgramme_list = new TreeMap<>();
-    private static TreeMap<String, String> moduleProgramme_list = new TreeMap<>();
+    private static TreeMap<String, String> module_list = new TreeMap<>();
+    //private static TreeMap<String, String> module_group_id_list = new TreeMap<>();
 
     @Override
     public void start(Stage stage) throws IOException {
+
         degreeProgramme_list = DegreeProgramme.getDegreeProgramme_list();
-        //moduleProgramme_list = DegreeProgramme.getModuleProgramme_list();
+
+        //module = StudyModule.getModule();
         // Creating mainwindow.
         TabPane tabPane = mainwindow();
 
@@ -219,18 +224,61 @@ public class Sisu extends Application {
         // Set the suitable font
         degreeProgrammeLabel.setFont(new Font(20));
 
-        
         // Add the choice box for the GridPane (the selection is the degree programme listed in the key of degreeprogramme_list)
-                ChoiceBox<String> degreeProgrammeChoiceBox = new ChoiceBox<>();
+        ChoiceBox<String> degreeProgrammeChoiceBox = new ChoiceBox<>();
         GridPane.setConstraints(degreeProgrammeChoiceBox, 1, 1);
         // Add the items to the choice box
         degreeProgrammeChoiceBox.getItems().addAll(degreeProgramme_list.keySet());
-        
+        // Set id for the degreeprogrammechoicebox
+        degreeProgrammeChoiceBox.setId("degreeProgrammeChoiceBox");
+        //Make the width of degreeprogrammechoicebox to be long suitable in the grid
+        degreeProgrammeChoiceBox.setMaxWidth(300);
+        // Add label for module
+        Label moduleLabel = new Label("Choosing your module:");
+        GridPane.setConstraints(moduleLabel, 1, 2);
 
-        
+        // Set the suitable font
+        moduleLabel.setFont(new Font(20));
+
+        // Add choiceBox for module (the selection is the elements of module listed in the module getter name list)
+        ChoiceBox<String> moduleChoiceBox = new ChoiceBox<>();
+        //Make the width of moduleChoiceBox to be long suitable in the grid
+        moduleChoiceBox.setMaxWidth(300);
+
+        //Set disable if degreeProgrammeChoiceBox hasn't been chosen any selection
+        moduleChoiceBox.setDisable(true);
+        degreeProgrammeChoiceBox.setOnAction((event) -> {
+            
+            // Clear the moduleChoiceBox
+            moduleChoiceBox.getItems().clear();
+            // Find the group_id of the chosen from the degreeProgrammeChoiceBox
+            String group_id = degreeProgramme_list.get(degreeProgrammeChoiceBox.getValue());
+            try {
+                // Add the items to the choice box using for function
+                module_list = DegreeProgramme.getModule(group_id);
+            } catch (IOException ex) {
+                Logger.getLogger(Sisu.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            // Check if module_list is null
+            if (module_list != null) {
+                // Add the items to the choice box using for function
+                moduleChoiceBox.getItems().addAll(module_list.keySet());
+                // Set disable to false
+                moduleChoiceBox.setDisable(false);
+            } else {
+                // Set disable to true
+                moduleChoiceBox.setDisable(true);
+            }
+            
+            // Print all key of module_list using system.out.println for checking
+        });
+
+        GridPane.setConstraints(moduleChoiceBox, 1, 3);
+        // Add the items to the choice box using for function
+
         //Add everything to the gridpane
-        grid.getChildren().addAll(firstNameLabel, lastNameLabel, emailLabel, studentNumberLabel, startDateLabel, degreeProgrammeLabel, degreeProgrammeChoiceBox);
-
+        grid.getChildren().addAll(firstNameLabel, lastNameLabel, emailLabel, studentNumberLabel, startDateLabel, quitButton, degreeProgrammeLabel, degreeProgrammeChoiceBox, moduleLabel, moduleChoiceBox);
+        //grid.getChildren().addAll(firstNameLabel, lastNameLabel, emailLabel, studentNumberLabel, startDateLabel, degreeProgrammeLabel, degreeProgrammeChoiceBox);
 
         //Add gridpane to the tab
         tab.setContent(grid);
