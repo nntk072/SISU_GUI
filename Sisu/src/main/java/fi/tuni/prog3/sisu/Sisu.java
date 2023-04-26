@@ -2,7 +2,7 @@ package fi.tuni.prog3.sisu;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,12 +16,13 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -34,14 +35,25 @@ import javafx.stage.Stage;
  */
 public class Sisu extends Application {
 
+    //Variables for displaying structure of studies
     private static TreeMap<String, String> degreeProgramme_list = new TreeMap<>();
     private static TreeMap<String, String> module_list = new TreeMap<>();
-    //private static TreeMap<String, String> module_group_id_list = new TreeMap<>();
+
+    // Variables for displaying the structure of degrees
+    private DegreeModule degreeModules = null;
+
+
+    // Variables for getting the condition of each module 
+    private HashMap<String, Object> courseCheckBoxes = new HashMap<>();
+    private ArrayList<CheckBox> checkboxArray = new ArrayList<>();
+    private ArrayList<DegreeModule> studyModule_list = null;
+    private ArrayList<DegreeProgramme> degreeProgramme_list2 = null;
 
     @Override
     public void start(Stage stage) throws IOException {
 
         degreeProgramme_list = DegreeProgramme.getDegreeProgramme_list();
+        //degreeProgramme_list2 = DegreeProgramme.getDegreeProgramme_list2();
 
         //module = StudyModule.getModule();
         // Creating mainwindow.
@@ -56,6 +68,7 @@ public class Sisu extends Application {
         Scene loginScene = new Scene(fxmlLoginLoader.load(), 600, 500);
         Scene registerScene = new Scene(fxmlRegisterLoader.load(), 607, 562);
 
+        // get controllers
         LoginController loginController = fxmlLoginLoader.getController();
         loginController.setSceneAfterAuthentication(authenticatedUserScene);
         loginController.setRegistrationScene(registerScene);
@@ -66,6 +79,7 @@ public class Sisu extends Application {
         registerController.setLoginScene(loginScene);
         registerController.setStage(stage);
 
+        // set scene
         stage.setScene(loginScene);
         stage.setTitle("SisuGUI");
         stage.show();
@@ -76,9 +90,8 @@ public class Sisu extends Application {
             User registeredUser = registerController.getAuthenticatedUser();
 
             if (loggedinUser != null || registeredUser != null) {
-                // do what you want with user info 
                 User user = loggedinUser != null ? loggedinUser : registeredUser;
-                System.out.println(user);
+                //System.out.println(user);
                 Label firstNameLabel = (Label) tabPane.lookup("#firstNameLabel");
                 firstNameLabel.setText(firstNameLabel.getText() + user.getFirstname());
                 Label lastNameLabel = (Label) tabPane.lookup("#lastNameLabel");
@@ -105,8 +118,6 @@ public class Sisu extends Application {
 
         // Adding two VBox to the HBox.
         centerHBox.getChildren().addAll(getLeftVBox(), getRightVBox());
-
-        // Set id
         centerHBox.setId("centerHBox");
 
         return centerHBox;
@@ -116,10 +127,15 @@ public class Sisu extends Application {
         // Creating a VBox for the left side.
         VBox leftVBox = new VBox();
         leftVBox.setPrefWidth(380);
-        leftVBox.setStyle("-fx-background-color: #8fc6fd;");
-        leftVBox.getChildren().add(new Label("Left Panel"));
-        //Set id for leftVBox
+        //leftVBox.setStyle("-fx-background-color: #8fc6fd;");
+        //leftVBox.getChildren().add(new Label("Left Panel"));
         leftVBox.setId("leftVBox");
+
+        // Create initial treeview
+        TreeView<String> treeView = new TreeView<>();
+        // Set id for the treeview
+        treeView.setId("treeView");
+        leftVBox.getChildren().add(treeView);
 
         return leftVBox;
     }
@@ -128,10 +144,8 @@ public class Sisu extends Application {
         // Creating a VBox for the right side.
         VBox rightVBox = new VBox();
         rightVBox.setPrefWidth(380);
-        rightVBox.setStyle("-fx-background-color: #b1c2d4;");
-
+        //rightVBox.setStyle("-fx-background-color: #b1c2d4;");
         rightVBox.getChildren().add(new Label("Right Panel"));
-        //Set id for rightVBox
         rightVBox.setId("rightVBox");
 
         return rightVBox;
@@ -149,18 +163,31 @@ public class Sisu extends Application {
         return button;
     }
 
+    /**
+     *
+     * @return tabPane
+     *
+     * Create the mainwindow with a tabpane and 2 tabs. Create the tab for
+     * student info and add it to the tabpane. Create the tab for structure and
+     * add it to the tabpane.
+     */
     private TabPane mainwindow() {
         //Create mainwindow with a tabpane and 2 tabs
         TabPane tabPane = new TabPane();
         tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
-
         tab_student_info(tabPane);
         tab_structure(tabPane);
-
         return tabPane;
-
     }
 
+    /**
+     *
+     * @param tabPane
+     *
+     * Create the tab for student info and add it to the tabpane. Create a
+     * gridpane for the tab and make the gridpane in the middle of the tab.
+     * Create labels and textfields for the gridpane.
+     */
     private void tab_student_info(TabPane tabPane) {
         //Create tab for student info
         Tab tab = new Tab();
@@ -234,7 +261,7 @@ public class Sisu extends Application {
         //Make the width of degreeprogrammechoicebox to be long suitable in the grid
         degreeProgrammeChoiceBox.setMaxWidth(300);
         // Add label for module
-        Label moduleLabel = new Label("Choosing your module:");
+        Label moduleLabel = new Label("Choosing your module/track:");
         GridPane.setConstraints(moduleLabel, 1, 2);
 
         // Set the suitable font
@@ -242,13 +269,20 @@ public class Sisu extends Application {
 
         // Add choiceBox for module (the selection is the elements of module listed in the module getter name list)
         ChoiceBox<String> moduleChoiceBox = new ChoiceBox<>();
+        // Add the choice box for the GridPane (the selection is the degree programme listed in the key of degreeprogramme_list)
+        GridPane.setConstraints(moduleChoiceBox, 1, 3);
+
         //Make the width of moduleChoiceBox to be long suitable in the grid
         moduleChoiceBox.setMaxWidth(300);
+        //Set the id for moduleChoiceBox
+        moduleChoiceBox.setId("moduleChoiceBox");
 
         //Set disable if degreeProgrammeChoiceBox hasn't been chosen any selection
         moduleChoiceBox.setDisable(true);
+        // Set id
+        moduleChoiceBox.setId("moduleChoiceBox");
         degreeProgrammeChoiceBox.setOnAction((event) -> {
-            
+
             // Clear the moduleChoiceBox
             moduleChoiceBox.getItems().clear();
             // Find the group_id of the chosen from the degreeProgrammeChoiceBox
@@ -266,15 +300,49 @@ public class Sisu extends Application {
                 // Set disable to false
                 moduleChoiceBox.setDisable(false);
             } else {
+                // clear the value of moduleChoiceBox
+                moduleChoiceBox.setValue(null);
                 // Set disable to true
                 moduleChoiceBox.setDisable(true);
-            }
-            
-            // Print all key of module_list using system.out.println for checking
-        });
+                
+                /*
+                TreeView<String> treeView = (TreeView<String>) tabPane.lookup("#treeView");
+                TreeItem<String> root = new TreeItem<>(degreeProgrammeChoiceBox.getValue());
+                treeView.setRoot(root);
+                */
+                // Defining degreeModules
 
-        GridPane.setConstraints(moduleChoiceBox, 1, 3);
-        // Add the items to the choice box using for function
+
+
+            }
+        });
+        //Continue with the moduleChoiceBox action
+        moduleChoiceBox.setOnAction((ActionEvent event) -> {
+            String module_id = null;
+            /* 
+            TreeView<String> treeView = (TreeView<String>) tabPane.lookup("#treeView");
+            TreeItem<String> root = new TreeItem<>(degreeProgrammeChoiceBox.getValue());
+            TreeItem<String> module = new TreeItem<>(moduleChoiceBox.getValue());
+            root.getChildren().add(module);
+            treeView.setRoot(root);
+            */
+
+            // Find the group_id of the chosen from the degreeProgrammeChoiceBox
+            String group_id = degreeProgramme_list.get(degreeProgrammeChoiceBox.getValue());
+            // Check condition of moduleChoiceBox
+            if (moduleChoiceBox.getValue() != null) {
+            // Find the module_id of the chosen from the moduleChoiceBox
+            module_id = module_list.get(moduleChoiceBox.getValue());
+            }
+            try {
+                // Find the credits of the module_id
+                int credits = DegreeProgramme.getModuleCredits(group_id);
+                degreeModules = new DegreeModule(module_id, group_id, credits);
+                degreeModules.readAllDegree();
+            } catch (IOException ex) {
+            }
+                        
+        });
 
         //Add everything to the gridpane
         grid.getChildren().addAll(firstNameLabel, lastNameLabel, emailLabel, studentNumberLabel, startDateLabel, quitButton, degreeProgrammeLabel, degreeProgrammeChoiceBox, moduleLabel, moduleChoiceBox);
@@ -285,8 +353,13 @@ public class Sisu extends Application {
 
     }
 
+    /**
+     *
+     * @param tabPane
+     *
+     * Create tab for student info
+     */
     private void tab_structure(TabPane tabPane) {
-        //Create tab for student info
         Tab tab = new Tab();
         tab.setText("Structure of studies");
         tab.setClosable(false);
@@ -306,5 +379,4 @@ public class Sisu extends Application {
 
         tab.setContent(root);
     }
-
 }
