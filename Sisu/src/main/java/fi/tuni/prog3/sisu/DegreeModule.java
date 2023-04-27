@@ -215,8 +215,9 @@ public class DegreeModule {
         URL url = new URL(urlString);
         String jsonStrings = new String(url.openStream().readAllBytes(), "UTF-8");
         System.out.println(jsonStrings);
-
+        System.out.println(module_id);
         if (jsonStrings.equals("[]")) {
+
             return JsonParser.parseString(jsonStrings).getAsJsonObject();
         }
         JsonObject jsonModule = JsonParser.parseString(jsonStrings).getAsJsonArray().get(0).getAsJsonObject();

@@ -29,6 +29,7 @@ public class DegreeProgramme {
     private static final TreeMap<String, String> degreeProgramme_list = new TreeMap<>();
     private static final TreeMap<String, String> degreeModule_list = new TreeMap<>();
 
+
     /**
      * Get the degree programme list from sis-tuni.funidata.fi
      *
@@ -95,17 +96,8 @@ public class DegreeProgramme {
         return degreeModule_list;
     }
 
-    //Get the minCredits of the Degree if there are no module
-    public static int getDegreeCredits(String moduleGroupID) throws MalformedURLException, IOException {
-        JsonObject jsonModule = addModuleObject(moduleGroupID);
-        int minCredits = jsonModule
-            .get("targetCredits").getAsJsonObject()
-            .get("minCredits").getAsInt();
-        return minCredits;
-    }
-
     //Get the minCredits of the modules
-    public static int getModuleCredits(String moduleGroupID) throws MalformedURLException, IOException {
+    public static int getCredits(String moduleGroupID) throws MalformedURLException, IOException {
         JsonObject jsonModule = addModuleObject(moduleGroupID);
         //System.out.println(jsonModule);
         int minCredits = jsonModule

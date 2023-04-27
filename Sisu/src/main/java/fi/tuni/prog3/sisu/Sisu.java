@@ -35,13 +35,13 @@ import javafx.stage.Stage;
  */
 public class Sisu extends Application {
 
+    // Variables for status of program
     //Variables for displaying structure of studies
     private static TreeMap<String, String> degreeProgramme_list = new TreeMap<>();
     private static TreeMap<String, String> module_list = new TreeMap<>();
 
     // Variables for displaying the structure of degrees
     private DegreeModule degreeModules = null;
-
 
     // Variables for getting the condition of each module 
     private HashMap<String, Object> courseCheckBoxes = new HashMap<>();
@@ -300,22 +300,29 @@ public class Sisu extends Application {
                 // Set disable to false
                 moduleChoiceBox.setDisable(false);
             } else {
-                // clear the value of moduleChoiceBox
                 moduleChoiceBox.setValue(null);
-                // Set disable to true
                 moduleChoiceBox.setDisable(true);
-                
-                /*
-                TreeView<String> treeView = (TreeView<String>) tabPane.lookup("#treeView");
-                TreeItem<String> root = new TreeItem<>(degreeProgrammeChoiceBox.getValue());
-                treeView.setRoot(root);
-                */
-                // Defining degreeModules
-
-
-
+                try {
+                    // Read the minCredits of the degree
+                    int credits = DegreeProgramme.getCredits(group_id);
+                    // Read the group_id name by getting the key of degreeprogramlist
+                    String group_id_name = degreeProgramme_list.get(degreeProgrammeChoiceBox.getValue());
+                    // Create the degreeModules
+                    degreeModules = new DegreeModule(group_id_name, group_id, credits);
+                    degreeModules.readAllDegree();
+                    System.out.println("haha");
+                    /*
+                    TreeView<String> treeView = (TreeView<String>) tabPane.lookup("#treeView");
+                    TreeItem<String> root = new TreeItem<>(degreeProgrammeChoiceBox.getValue());
+                    treeView.setRoot(root);
+                    */
+                    // Defining degreeModules
+                } catch (IOException ex) {
+                    Logger.getLogger(Sisu.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
+
         //Continue with the moduleChoiceBox action
         moduleChoiceBox.setOnAction((ActionEvent event) -> {
             String module_id = null;
@@ -325,25 +332,30 @@ public class Sisu extends Application {
             TreeItem<String> module = new TreeItem<>(moduleChoiceBox.getValue());
             root.getChildren().add(module);
             treeView.setRoot(root);
-            */
+             */
 
             // Find the group_id of the chosen from the degreeProgrammeChoiceBox
             String group_id = degreeProgramme_list.get(degreeProgrammeChoiceBox.getValue());
             // Check condition of moduleChoiceBox
             if (moduleChoiceBox.getValue() != null) {
-            // Find the module_id of the chosen from the moduleChoiceBox
-            module_id = module_list.get(moduleChoiceBox.getValue());
+                // Find the module_id of the chosen from the moduleChoiceBox
+                module_id = module_list.get(moduleChoiceBox.getValue());
+                try {
+                    // Find the credits of the module_id
+                    int credits = DegreeProgramme.getCredits(group_id);
+                    degreeModules = new DegreeModule(module_id, group_id, credits);
+                    degreeModules.readAllDegree();
+                    System.out.println("hahi");
+                } catch (IOException ex) {
+                    Logger.getLogger(Sisu.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-            try {
-                // Find the credits of the module_id
-                int credits = DegreeProgramme.getModuleCredits(group_id);
-                degreeModules = new DegreeModule(module_id, group_id, credits);
-                degreeModules.readAllDegree();
-            } catch (IOException ex) {
-            }
-                        
         });
 
+        // Check if degreeModules is also null or not
+        if (degreeModules != null) {
+            System.out.println("haha");
+        }
         //Add everything to the gridpane
         grid.getChildren().addAll(firstNameLabel, lastNameLabel, emailLabel, studentNumberLabel, startDateLabel, quitButton, degreeProgrammeLabel, degreeProgrammeChoiceBox, moduleLabel, moduleChoiceBox);
         //grid.getChildren().addAll(firstNameLabel, lastNameLabel, emailLabel, studentNumberLabel, startDateLabel, degreeProgrammeLabel, degreeProgrammeChoiceBox);
