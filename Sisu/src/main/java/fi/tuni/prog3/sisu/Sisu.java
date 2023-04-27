@@ -19,6 +19,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
@@ -147,8 +148,20 @@ public class Sisu extends Application {
         VBox rightVBox = new VBox();
         rightVBox.setPrefWidth(380);
         //rightVBox.setStyle("-fx-background-color: #b1c2d4;");
-        rightVBox.getChildren().add(new Label("Right Panel"));
         rightVBox.setId("rightVBox");
+
+        // Create a new ListView, which can be scroll and contains the checkbox and string
+        ListView<HBox> listView = new ListView<>();
+        listView.setId("listView");
+        listView.setPrefHeight(400);
+        listView.setPrefWidth(380);
+
+
+        // Add ListView to rightVBox
+        rightVBox.getChildren().add(listView);
+        
+
+        
 
         return rightVBox;
     }
@@ -327,44 +340,26 @@ public class Sisu extends Application {
             if (moduleChoiceBox.getValue() != null) {
                 // Find the module_id of the chosen from the moduleChoiceBox
                 module_id = module_list.get(moduleChoiceBox.getValue());
+                // Find the credits of the module_id
+                int credits = 0;
+                String group_id_name = degreeProgrammeChoiceBox.getValue();
+                String module_id_name = moduleChoiceBox.getValue();
+                degreeModules = new DegreeModule(module_id_name, module_id, credits);
                 try {
-                    // Find the credits of the module_id
-                    int credits = DegreeProgramme.getCredits(group_id);
-                    String module_id_name = moduleChoiceBox.getValue();
-
-                    degreeModules = new DegreeModule(module_id_name, module_id, credits);
+                    credits = DegreeProgramme.getCredits(group_id);
                     degreeModules.readAllDegree();
-                    System.out.println("Access the degree programs");
-                    // Get group_id_name
-                    String group_id_name = degreeProgrammeChoiceBox.getValue();
-
-                    // Add the group_id_name, credits into tree item
-                    TreeItem<String> rootOfDegree = new TreeItem<>(group_id_name + " (" + credits + " ECTS)");
-                    // Find the tree view based on looking up id
-                    TreeView<String> treeView = (TreeView<String>) tabPane.lookup("#treeView");
-                    // Add the rootItem to the treeView
-                    treeView.setRoot(rootOfDegree);
-                    // Set the rootOfDegree to be expanded
-                    rootOfDegree.setExpanded(true);
-                    // Create a list of TreeItem<Module> for each module of degreeModules
-                    var tree_item_module = degreeModules.getModules();
-                    // Set TreeItem for each module of degreeModules with the string as "Name xx credits" if it is a course, Name if it is a module
-                    var rootNode = new TreeItem<>(degreeModules.getName());
-                    for (var treeItem : tree_item_module) {
-                        TreeItem<String> moduleItem = new TreeItem<>(treeItem.getModuleName());
-                        for (var studyModuleItem : treeItem.getStudyModules()) {
-                            for (var courseItem : studyModuleItem.getCourses()) {
-                                TreeItem<String> course = new TreeItem<>(courseItem.getCourseName() + " (" + courseItem.getCredits() + " ECTS)");
-                                moduleItem.getChildren().add(course);
-                            }
-                        }
-                        rootNode.getChildren().add(moduleItem);
-                    }
-                    rootOfDegree.getChildren().add(rootNode);
-
-                } catch (IOException ex) {
-                    Logger.getLogger(Sisu.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
+                
+                
+                
+                System.out.println("Access the degree program");
+                // Get group_id_name
+                
+                setup(module_id, module_id_name, group_id, group_id_name, credits, degreeModules);
+
             }
         }
         );
@@ -405,7 +400,52 @@ public class Sisu extends Application {
         tab.setContent(root);
     }
 
-    void setup() {
-        TreeView<String> treeView = (TreeView<String>) tabPane.lookup("#treeView");
+    void setup(String module_id, String module_id_name, String group_id, String group_id_name, int credits, DegreeModule degreeModules2) {
+
+
+                // Add the group_id_name, credits into tree item
+                TreeItem<String> rootOfDegree = new TreeItem<>(group_id_name + " (" + credits + " ECTS)");
+                // Find the tree view based on looking up id
+                TreeView<String> treeView = (TreeView<String>) tabPane.lookup("#treeView");
+                // Add the rootItem to the treeView
+                treeView.setRoot(rootOfDegree);
+                // Set the rootOfDegree to be expanded
+                rootOfDegree.setExpanded(true);
+                // Create a list of TreeItem<Module> for each module of degreeModules
+                var tree_item_module = degreeModules.getModules();
+                // Set TreeItem for each module of degreeModules with the string as "Name xx credits" if it is a course, Name if it is a module
+                var rootNode = new TreeItem<>(degreeModules.getName());
+                for (var treeItem : tree_item_module) {
+                    TreeItem<String> moduleItem = new TreeItem<>(treeItem.getModuleName());
+                    for (var studyModuleItem : treeItem.getStudyModules()) {
+                        for (var courseItem : studyModuleItem.getCourses()) {
+                            TreeItem<String> course = new TreeItem<>(courseItem.getCourseName() + " (" + courseItem.getCredits() + " ECTS)");
+                            moduleItem.getChildren().add(course);
+                        }
+                    }
+                    rootNode.getChildren().add(moduleItem);
+                }
+                rootOfDegree.getChildren().add(rootNode);
+
+                // Find the listView inside rightVBox 
+                ListView<HBox> listView = (ListView<HBox>) tabPane.lookup("#listView");
+
+                //add the checkbox and the name of each course, credits... into the each HBox of the listView
+                for (var treeItem : tree_item_module) {
+                    for (var studyModuleItem : treeItem.getStudyModules()) {
+                        for (var courseItem : studyModuleItem.getCourses()) {
+                            HBox hbox = new HBox();
+                            CheckBox checkBox = new CheckBox();
+                            checkBox.setPadding(new Insets(0, 10, 0, 0));
+                            Label label = new Label(courseItem.getCourseName() + " (" + courseItem.getCredits() + " ECTS)");
+                            hbox.getChildren().addAll(checkBox, label);
+                            listView.getItems().add(hbox);
+                        }
+                    }
+                }
+                          
+
+
+
     }
 }
