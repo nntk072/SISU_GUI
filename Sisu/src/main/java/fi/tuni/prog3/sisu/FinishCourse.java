@@ -1,49 +1,59 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package fi.tuni.prog3.sisu;
 
+import java.util.ArrayList;
+
 /**
+ * This class implements the FinishCourse
  *
  * @author xblong
  */
 public class FinishCourse {
+
     private String courseName;
     private String courseCode;
     private int courseCredit;
+    private ArrayList<String> courseList;
     //private int courseGrade;
 
     public FinishCourse() {
     }
 
-    public FinishCourse(String courseName, String courseCode, int courseCredit) {
+    /**
+     * Constructor
+     *
+     * @param courseName
+     * @param courseList
+     * @param courseCredit
+     */
+    public FinishCourse(String courseName, ArrayList<String> courseList, int courseCredit) {
         this.courseName = courseName;
-        this.courseCode = courseCode;
         this.courseCredit = courseCredit;
-    }
-    /*
-    public FinishCourse(String courseName, String courseCode, int courseCredit, int courseGrade) {
-        this.courseName = courseName;
-        this.courseCode = courseCode;
-        this.courseCredit = courseCredit;
-        this.courseGrade = courseGrade;
-    }*/
-    public FinishCourse(String courseName, String courseCode, int courseCredit, int courseGrade) {
-        this.courseName = courseName;
-        this.courseCode = courseCode;
-        this.courseCredit = courseCredit;
-        //this.courseGrade = courseGrade;
+        this.courseList = courseList;
     }
 
+    /**
+     * Get courseName
+     *
+     * @return courseName
+     */
     public String getCourseName() {
         return courseName;
     }
 
+    /**
+     * Get courseCode
+     *
+     * @return coursecode
+     */
     public String getCourseCode() {
         return courseCode;
     }
 
+    /**
+     * Get courseCredit
+     *
+     * @return courseCredit
+     */
     public int getCourseCredit() {
         return courseCredit;
     }
@@ -51,17 +61,8 @@ public class FinishCourse {
     // public int getCourseGrade() {
     //     return courseGrade;
     // }
-
     public void setCourseName(String courseName) {
         this.courseName = courseName;
-    }
-
-    public void setCourseCode(String courseCode) {
-        this.courseCode = courseCode;
-    }
-
-    public void setCourseCredit(int courseCredit) {
-        this.courseCredit = courseCredit;
     }
 
     // public void setCourseGrade(int courseGrade) {

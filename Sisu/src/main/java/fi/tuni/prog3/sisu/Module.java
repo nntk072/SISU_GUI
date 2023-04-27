@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 /**
  * This class stores information about modules
+ * @author xblong
  */
 public class Module {
 
@@ -13,11 +14,9 @@ public class Module {
 
     /**
      * Constructor
-     * Precondition: studyModules is not empty
-     * Post-condition: studyModules don't change
-     * @param moduleName Module name
-     * @param moduleCode Module code
-     * @param studyModules Arraylist of study modules
+     * @param moduleName
+     * @param moduleCode
+     * @param studyModules ArrayList of studyModules
      */
     public Module(String moduleName, String moduleCode, ArrayList<StudyModule> studyModules) {
         this.moduleName = moduleName;
@@ -26,7 +25,7 @@ public class Module {
     }
 
     /**
-     * Gets the module name
+     * Get the module name
      * @return module name
      */
     public String getModuleName() {
@@ -34,7 +33,7 @@ public class Module {
     }
 
     /**
-     * Gets the module code
+     * Get the module code
      * @return module name
      */
     public String getModuleCode() {
@@ -43,17 +42,17 @@ public class Module {
 
     /**
      * Gets the ArrayList which stores study modules
-     * @return study module ArrayList
+     * @return studyModules
      */
     public ArrayList<StudyModule> getStudyModules() {
         return studyModules;
     }
 
     /**
-     * Adds the wanted study module to the objects study module ArrayList
+     * Add the studyModule into ArrayList
      * @param studyModule wanted study module
      */
-    public void setStudyModules(StudyModule studyModule) {
+    public void addStudyModules(StudyModule studyModule) {
         this.studyModules.add(studyModule);
     }
 }

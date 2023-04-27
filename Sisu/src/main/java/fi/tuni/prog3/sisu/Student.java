@@ -1,69 +1,86 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package fi.tuni.prog3.sisu;
 
 import java.util.ArrayList;
 
 /**
- *
+ * This class stores information about specific student
  * @author xblong
  */
-public class Student {
+public class Student implements iReadAndWriteToFile {
     // Store all the course information of each student
-    private String email_address;
-    private int student_number;
+    private final int studentNumber;
     private DegreeModule degreeModule;
+    private ArrayList <DegreeModule> degreeModules;
     private ArrayList <FinishCourse> finishCourse;
-    // Information getting from Multiple Choices
-    private String degreeName;
-    private String degreeCode;
-    
-    private String moduleName;
-    private String moduleCode;
 
-
-    public Student(String email_address, int student_number,DegreeModule degreeModule, ArrayList<FinishCourse> finishCourse, String moduleName, String moduleCode) {
-        this.email_address = email_address;
-        this.student_number = student_number;
-        this.degreeModule = degreeModule;
+    /**
+     * Constructor
+     * @param student_number
+     * @param degreeModules
+     * @param finishCourse
+     */
+    public Student(int student_number, ArrayList <DegreeModule> degreeModules, ArrayList<FinishCourse> finishCourse) {
+        this.studentNumber = student_number;
+        this.degreeModules = degreeModules;
         this.finishCourse = finishCourse;
-        this.moduleName = moduleName;
-        this.moduleCode = moduleCode;
     }
 
-    public String getEmail_address() {
-        return email_address;
-    }
-
+    /**
+     * Get the student number
+     * @return student number
+     */
     public int getStudent_number() {
-        return student_number;
+        return studentNumber;
     }
 
+    /**
+     * Get the degree module lists
+     * @return degree module lists
+     */
+    public ArrayList<DegreeModule> getDegreeModules() {
+        return degreeModules;
+    }
+
+    /**
+     * Get the degree module
+     * @return degree module
+     */
     public DegreeModule getDegreeModule() {
         return degreeModule;
     }
 
+    /**
+     * Get the finished course lists
+     * @return finished course lists
+     */
     public ArrayList<FinishCourse> getFinishCourse() {
         return finishCourse;
     }
 
-    public void setEmail_address(String email_address) {
-        this.email_address = email_address;
-    }
-
+    /**
+     * Set the degree module
+     * @param degreeModule 
+     */
     public void setDegreeModule(DegreeModule degreeModule) {
         this.degreeModule = degreeModule;
     }
 
+    /**
+     * Set the degree module lists
+     * @param degreeModules 
+     */
     public void setFinishCourse(ArrayList<FinishCourse> finishCourse) {
         this.finishCourse = finishCourse;
     }    
 
-    // Save the Student into Json files if exists
-    public void saveStudent() {
-        // TODO implement here
+    @Override
+    public boolean readFromFile(String fileName) throws Exception {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean writeToFile(String fileName) throws Exception {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
     
         

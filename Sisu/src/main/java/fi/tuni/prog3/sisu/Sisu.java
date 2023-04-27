@@ -7,6 +7,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fi.tuni.prog3.sisu.Module;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -38,7 +39,7 @@ import javafx.stage.Stage;
 public class Sisu extends Application {
 
     // Variables for status of program
-    TabPane tabPane = mainwindow();
+    TabPane tabPane = mainWindow();
     //Variables for displaying structure of studies
     private static TreeMap<String, String> degreeProgramme_list = new TreeMap<>();
     private static TreeMap<String, String> module_list = new TreeMap<>();
@@ -56,39 +57,37 @@ public class Sisu extends Application {
     public void start(Stage stage) throws IOException {
 
         degreeProgramme_list = DegreeProgramme.getDegreeProgramme_list();
-        //degreeProgramme_list2 = DegreeProgramme.getDegreeProgramme_list2();
+        tabPane = mainWindow();
 
-        //module = StudyModule.getModule();
-        // Creating mainwindow.
-        tabPane = mainwindow();
-
-        // import fxml files
+        // Import FXML File
         FXMLLoader fxmlLoginLoader = new FXMLLoader(Sisu.class.getResource("login.fxml"));
         FXMLLoader fxmlRegisterLoader = new FXMLLoader(Sisu.class.getResource("sign-up.fxml"));
 
-        // root here was defined above
+        // Define all the Scenes
         Scene authenticatedUserScene = new Scene(tabPane, 800, 500);
         Scene loginScene = new Scene(fxmlLoginLoader.load(), 600, 500);
         Scene registerScene = new Scene(fxmlRegisterLoader.load(), 607, 562);
 
-        // get controllers
+        // Get the controller from the Login File
         LoginController loginController = fxmlLoginLoader.getController();
         loginController.setSceneAfterAuthentication(authenticatedUserScene);
         loginController.setRegistrationScene(registerScene);
         loginController.setStage(stage);
 
+        // Get the controller from the Register File
         SignUpController registerController = fxmlRegisterLoader.getController();
         registerController.setSceneAfterAuthentication(authenticatedUserScene);
         registerController.setLoginScene(loginScene);
         registerController.setStage(stage);
 
-        // set scene
+        // Set the scene to the stage and show the stage to the user.
         stage.setScene(loginScene);
         stage.setTitle("SisuGUI");
         stage.show();
 
+        // Add listener to the scene property of the stage
         stage.sceneProperty().addListener((observable, oldScene, newScene) -> {
-            System.out.println("changed scene");
+            //System.out.println("changed scene");
             User loggedinUser = loginController.getAuthenticatedUser();
             User registeredUser = registerController.getAuthenticatedUser();
 
@@ -134,7 +133,7 @@ public class Sisu extends Application {
         //leftVBox.getChildren().add(new Label("Left Panel"));
         leftVBox.setId("leftVBox");
 
-        // Create initial treeview
+        // Create treeView for listing all the DegreeModule, Module, Courses in the logical way
         TreeView<String> treeView = new TreeView<>();
         // Set id for the treeview
         treeView.setId("treeView");
@@ -150,22 +149,22 @@ public class Sisu extends Application {
         //rightVBox.setStyle("-fx-background-color: #b1c2d4;");
         rightVBox.setId("rightVBox");
 
-        // Create a new ListView, which can be scroll and contains the checkbox and string
+        // Create a ListView for listing all the courses and their checkboxes in the logical way
         ListView<HBox> listView = new ListView<>();
         listView.setId("listView");
         listView.setPrefHeight(400);
         listView.setPrefWidth(380);
 
-
-        // Add ListView to rightVBox
         rightVBox.getChildren().add(listView);
-        
-
-        
 
         return rightVBox;
     }
 
+    /**
+     * Creating a quit button to end the program
+     *
+     * @return quit button
+     */
     private Button getQuitButton() {
         // Creating a button.
         Button button = new Button("Quit");
@@ -182,12 +181,12 @@ public class Sisu extends Application {
      *
      * @return tabPane
      *
-     * Create the mainwindow with a tabpane and 2 tabs. Create the tab for
-     * student info and add it to the tabpane. Create the tab for structure and
-     * add it to the tabpane.
+     * Create the mainWindow with a tabPane and 2 tabs. Create the tab for
+     * student info and add it to the tabPane. Create the tab for structure and
+     * add it to the tabPane.
      */
-    private TabPane mainwindow() {
-        //Create mainwindow with a tabpane and 2 tabs
+    private TabPane mainWindow() {
+        // Create a tabPane
         TabPane tabPane = new TabPane();
         tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
         tab_student_info(tabPane);
@@ -199,9 +198,9 @@ public class Sisu extends Application {
      *
      * @param tabPane
      *
-     * Create the tab for student info and add it to the tabpane. Create a
-     * gridpane for the tab and make the gridpane in the middle of the tab.
-     * Create labels and textfields for the gridpane.
+     * Create the tab for student info and add it to the tabPane. Create a
+     * gridPane for the tab and make the gridPane in the middle of the tab.
+     * Create labels for the gridPane.
      */
     private void tab_student_info(TabPane tabPane) {
         //Create tab for student info
@@ -210,44 +209,36 @@ public class Sisu extends Application {
         tab.setClosable(false);
         tabPane.getTabs().add(tab);
 
-        //Create a gridpane for the tab and make the gridpane in the middle of the tab
-        GridPane grid = new GridPane();
+        //Create a gridPane for the tab and make the gridPane in the middle of the tab
+        GridPane gridPane = new GridPane();
         // Set id for grid
-        grid.setId("infoGrid");
-        grid.setAlignment(Pos.CENTER);
-        grid.setHgap(10);
-        grid.setVgap(10);
-        // Set the size of the grid to be large suitable
-        grid.setPrefSize(800, 500);
-        //Set the padding to be large suitable
-        grid.setPadding(new Insets(25, 25, 25, 25));
-        // Show the grid lines
-        //grid.setGridLinesVisible(true);
+        gridPane.setId("infoGrid");
+        gridPane.setAlignment(Pos.CENTER);
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
 
-        //Create labels and textfields for the gridpane
+        // Set the size of the gridPane to be large suitable
+        gridPane.setPrefSize(800, 500);
+        gridPane.setPadding(new Insets(25, 25, 25, 25));
+
+        //Create labels for the gridPane, print the Student information.
         Label firstNameLabel = new Label("First Name: ");
         GridPane.setConstraints(firstNameLabel, 0, 0);
-        // Last name
         Label lastNameLabel = new Label("Last Name: ");
         GridPane.setConstraints(lastNameLabel, 0, 1);
-        // Email
         Label emailLabel = new Label("Email: ");
         GridPane.setConstraints(emailLabel, 0, 2);
-        // Student number
         Label studentNumberLabel = new Label("Student Number: ");
         GridPane.setConstraints(studentNumberLabel, 0, 3);
-        // Start date
         Label startDateLabel = new Label("Start Date: ");
         GridPane.setConstraints(startDateLabel, 0, 4);
-
-        // Set id for all labels above by thy name
         firstNameLabel.setId("firstNameLabel");
         lastNameLabel.setId("lastNameLabel");
         emailLabel.setId("emailLabel");
         studentNumberLabel.setId("studentNumberLabel");
         startDateLabel.setId("startingDateLabel");
 
-        // Set the font size of the label
+        // Set the font size of the label to be as large as suitable
         firstNameLabel.setFont(new Font(20));
         lastNameLabel.setFont(new Font(20));
         emailLabel.setFont(new Font(20));
@@ -260,68 +251,58 @@ public class Sisu extends Application {
         GridPane.setConstraints(quitButton, 1, 5);
         GridPane.setHalignment(quitButton, HPos.RIGHT);
 
-        //Create label "Choosing your degree programme:"
+        // Labels for choosing the degree
         Label degreeProgrammeLabel = new Label("Choosing your degree programme:");
-        GridPane.setConstraints(degreeProgrammeLabel, 1, 0);
-        // Set the suitable font
         degreeProgrammeLabel.setFont(new Font(20));
+        GridPane.setConstraints(degreeProgrammeLabel, 1, 0);
 
-        // Add the choice box for the GridPane (the selection is the degree programme listed in the key of degreeprogramme_list)
+        // Add the choice box for the degree selection
         ChoiceBox<String> degreeProgrammeChoiceBox = new ChoiceBox<>();
         GridPane.setConstraints(degreeProgrammeChoiceBox, 1, 1);
         // Add the items to the choice box
         degreeProgrammeChoiceBox.getItems().addAll(degreeProgramme_list.keySet());
-        // Set id for the degreeprogrammechoicebox
         degreeProgrammeChoiceBox.setId("degreeProgrammeChoiceBox");
-        //Make the width of degreeprogrammechoicebox to be long suitable in the grid
         degreeProgrammeChoiceBox.setMaxWidth(300);
-        // Add label for module
+
+        // Labels for choosing the module
         Label moduleLabel = new Label("Choosing your module/track:");
+        moduleLabel.setFont(new Font(20));
         GridPane.setConstraints(moduleLabel, 1, 2);
 
-        // Set the suitable font
-        moduleLabel.setFont(new Font(20));
-
-        // Add choiceBox for module (the selection is the elements of module listed in the module getter name list)
+        // Add choiceBox for module/track selection
         ChoiceBox<String> moduleChoiceBox = new ChoiceBox<>();
-        // Add the choice box for the GridPane (the selection is the degree programme listed in the key of degreeprogramme_list)
+        moduleChoiceBox.setMaxWidth(300);
+        moduleChoiceBox.setId("moduleChoiceBox");
+        moduleChoiceBox.setDisable(true);
+        moduleChoiceBox.setId("moduleChoiceBox");
         GridPane.setConstraints(moduleChoiceBox, 1, 3);
 
-        //Make the width of moduleChoiceBox to be long suitable in the grid
-        moduleChoiceBox.setMaxWidth(300);
-        //Set the id for moduleChoiceBox
-        moduleChoiceBox.setId("moduleChoiceBox");
-
-        //Set disable if degreeProgrammeChoiceBox hasn't been chosen any selection
-        moduleChoiceBox.setDisable(true);
-        // Set id
-        moduleChoiceBox.setId("moduleChoiceBox");
+        // Add the items to the choice box
         degreeProgrammeChoiceBox.setOnAction((event) -> {
-
             // Clear the moduleChoiceBox
             moduleChoiceBox.getItems().clear();
-            // Find the group_id of the chosen from the degreeProgrammeChoiceBox
+            // Find the group_id of the degree
             String group_id = degreeProgramme_list.get(degreeProgrammeChoiceBox.getValue());
+
             try {
-                // Add the items to the choice box using for function
                 module_list = DegreeProgramme.getModule(group_id);
             } catch (IOException ex) {
                 Logger.getLogger(Sisu.class.getName()).log(Level.SEVERE, null, ex);
             }
+
             // Check if module_list is null
             if (module_list != null) {
-                // Add the items to the choice box using for function
+                // Add the module and track to the moduleChoiceBox
                 moduleChoiceBox.getItems().addAll(module_list.keySet());
-                // Set disable to false
                 moduleChoiceBox.setDisable(false);
             } else {
                 moduleChoiceBox.setValue(null);
                 moduleChoiceBox.setDisable(true);
+                // Read the minCredits, name of the degree
+                String group_id_name = degreeProgramme_list.get(degreeProgrammeChoiceBox.getValue());
                 try {
-                    // Read the minCredits of the degree
                     int credits = DegreeProgramme.getCredits(group_id);
-                    // Read the group_id name by getting the key of degreeprogramlist
-                    String group_id_name = degreeProgramme_list.get(degreeProgrammeChoiceBox.getValue());
+
                     // Create the degreeModules
                     degreeModules = new DegreeModule(group_id_name, group_id, credits);
                     degreeModules.readAllDegree();
@@ -331,45 +312,34 @@ public class Sisu extends Application {
             }
         });
 
-        //Continue with the moduleChoiceBox action
         moduleChoiceBox.setOnAction((ActionEvent event) -> {
             String module_id = null;
-            // Find the group_id of the chosen from the degreeProgrammeChoiceBox
             String group_id = degreeProgramme_list.get(degreeProgrammeChoiceBox.getValue());
-            // Check condition of moduleChoiceBox
+            String group_id_name = degreeProgrammeChoiceBox.getValue();
+
             if (moduleChoiceBox.getValue() != null) {
-                // Find the module_id of the chosen from the moduleChoiceBox
                 module_id = module_list.get(moduleChoiceBox.getValue());
-                // Find the credits of the module_id
                 int credits = 0;
-                String group_id_name = degreeProgrammeChoiceBox.getValue();
                 String module_id_name = moduleChoiceBox.getValue();
                 degreeModules = new DegreeModule(module_id_name, module_id, credits);
                 try {
                     credits = DegreeProgramme.getCredits(group_id);
                     degreeModules.readAllDegree();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
-                
-                
-                
-                System.out.println("Access the degree program");
-                // Get group_id_name
-                
+
+                //System.out.println("Access the degree program");
                 setup(module_id, module_id_name, group_id, group_id_name, credits, degreeModules);
 
             }
         }
         );
-        //Add everything to the gridpane
-        grid.getChildren()
+
+        gridPane.getChildren()
                 .addAll(firstNameLabel, lastNameLabel, emailLabel, studentNumberLabel, startDateLabel, quitButton, degreeProgrammeLabel, degreeProgrammeChoiceBox, moduleLabel, moduleChoiceBox);
         //grid.getChildren().addAll(firstNameLabel, lastNameLabel, emailLabel, studentNumberLabel, startDateLabel, degreeProgrammeLabel, degreeProgrammeChoiceBox);
-
-        //Add gridpane to the tab
-        tab.setContent(grid);
+        tab.setContent(gridPane);
 
     }
 
@@ -400,52 +370,46 @@ public class Sisu extends Application {
         tab.setContent(root);
     }
 
+    /**
+     * Functions for setting up the contents of the all the modules and courses
+     *
+     * @param module_id
+     * @param module_id_name
+     * @param group_id
+     * @param group_id_name
+     * @param credits
+     * @param degreeModules2
+     *
+     */
     void setup(String module_id, String module_id_name, String group_id, String group_id_name, int credits, DegreeModule degreeModules2) {
 
+        TreeItem<String> rootOfDegree = new TreeItem<>(group_id_name + " (" + credits + " ECTS)");
+        TreeView<String> treeView = (TreeView<String>) tabPane.lookup("#treeView");
+        ListView<HBox> listView = (ListView<HBox>) tabPane.lookup("#listView");
+        treeView.setRoot(rootOfDegree);
+        rootOfDegree.setExpanded(true);
 
-                // Add the group_id_name, credits into tree item
-                TreeItem<String> rootOfDegree = new TreeItem<>(group_id_name + " (" + credits + " ECTS)");
-                // Find the tree view based on looking up id
-                TreeView<String> treeView = (TreeView<String>) tabPane.lookup("#treeView");
-                // Add the rootItem to the treeView
-                treeView.setRoot(rootOfDegree);
-                // Set the rootOfDegree to be expanded
-                rootOfDegree.setExpanded(true);
-                // Create a list of TreeItem<Module> for each module of degreeModules
-                var tree_item_module = degreeModules.getModules();
-                // Set TreeItem for each module of degreeModules with the string as "Name xx credits" if it is a course, Name if it is a module
-                var rootNode = new TreeItem<>(degreeModules.getName());
-                for (var treeItem : tree_item_module) {
-                    TreeItem<String> moduleItem = new TreeItem<>(treeItem.getModuleName());
-                    for (var studyModuleItem : treeItem.getStudyModules()) {
-                        for (var courseItem : studyModuleItem.getCourses()) {
-                            TreeItem<String> course = new TreeItem<>(courseItem.getCourseName() + " (" + courseItem.getCredits() + " ECTS)");
-                            moduleItem.getChildren().add(course);
-                        }
-                    }
-                    rootNode.getChildren().add(moduleItem);
+        // Get the modules of the degreeModules
+        ArrayList<Module> tree_item_module = degreeModules.getModules();
+
+        // Set TreeItem for each module and course with the string as "Name xx credits" if it is a course, Name if it is a module
+        var rootNode = new TreeItem<>(degreeModules.getName());
+        for (var treeItem : tree_item_module) {
+            TreeItem<String> moduleItem = new TreeItem<>(treeItem.getModuleName());
+            for (var studyModuleItem : treeItem.getStudyModules()) {
+                for (var courseItem : studyModuleItem.getCourses()) {
+                    TreeItem<String> course = new TreeItem<>(courseItem.getCourseName() + " (" + courseItem.getCredits() + " ECTS)");
+                    moduleItem.getChildren().add(course);
+                    HBox hbox = new HBox();
+                    CheckBox checkBox = new CheckBox();
+                    checkBox.setPadding(new Insets(0, 10, 0, 0));
+                    Label label = new Label(courseItem.getCourseName() + " (" + courseItem.getCredits() + " ECTS)");
+                    hbox.getChildren().addAll(checkBox, label);
+                    listView.getItems().add(hbox);
                 }
-                rootOfDegree.getChildren().add(rootNode);
-
-                // Find the listView inside rightVBox 
-                ListView<HBox> listView = (ListView<HBox>) tabPane.lookup("#listView");
-
-                //add the checkbox and the name of each course, credits... into the each HBox of the listView
-                for (var treeItem : tree_item_module) {
-                    for (var studyModuleItem : treeItem.getStudyModules()) {
-                        for (var courseItem : studyModuleItem.getCourses()) {
-                            HBox hbox = new HBox();
-                            CheckBox checkBox = new CheckBox();
-                            checkBox.setPadding(new Insets(0, 10, 0, 0));
-                            Label label = new Label(courseItem.getCourseName() + " (" + courseItem.getCredits() + " ECTS)");
-                            hbox.getChildren().addAll(checkBox, label);
-                            listView.getItems().add(hbox);
-                        }
-                    }
-                }
-                          
-
-
-
+            }
+            rootNode.getChildren().add(moduleItem);
+        }
+        rootOfDegree.getChildren().add(rootNode);
     }
 }

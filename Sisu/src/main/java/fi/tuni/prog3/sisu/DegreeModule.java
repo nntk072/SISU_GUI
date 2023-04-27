@@ -1,6 +1,7 @@
 package fi.tuni.prog3.sisu;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -8,7 +9,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import java.net.MalformedURLException;
+
+import fi.tuni.prog3.sisu.Module;
 
 /**
  * An abstract class for storing information on Modules and Courses.
@@ -16,37 +18,35 @@ import java.net.MalformedURLException;
 public class DegreeModule {
 
     private String name;
-    //private String id;
     private String groupId;
     private int minCredits;
     private ArrayList<Module> modules;
 
     /**
-     * A constructor for initializing the member variables.
+     * Constructor for DegreeModule
      *
-     * @param name name of the Module or Course.
-     * @param groupId group id of the Module or Course.
-     * @param minCredits minimum credits of the Module or Course.
+     * @param name Module/Course name.
+     * @param groupId Module/Course groupId.
+     * @param minCredits Module/Course minCredits.
      */
     public DegreeModule(String name, String groupId,
             int minCredits) {
         this.name = name;
-        //this.id = id;
         this.groupId = groupId;
         this.minCredits = minCredits;
     }
 
     /**
-     * Returns the name of the Module or Course.
+     * Get the Module/Course name
      *
-     * @return name of the Module or Course.
+     * @return name
      */
     public String getName() {
         return this.name;
     }
 
     /**
-     * Returns the group id of the Module or Course.
+     * Returns Module/Course groupId
      *
      * @return group id of the Module or Course.
      */
@@ -54,22 +54,47 @@ public class DegreeModule {
         return this.groupId;
     }
 
+    /**
+     * Returns the list of modules.
+     *
+     * @return list of modules.
+     */
     public ArrayList<Module> getModules() {
         return modules;
     }
 
+    /**
+     * Sets the name of the Module or Course.
+     *
+     * @param name name of the Module or Course.
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Sets the group id of the Module or Course.
+     *
+     * @param groupId group id of the Module or Course.
+     */
     public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
 
+    /**
+     * Sets the minimum credits of the Module or Course.
+     *
+     * @param minCredits minimum credits of the Module or Course.
+     */
     public void setMinCredits(int minCredits) {
         this.minCredits = minCredits;
     }
 
+    /**
+     * Sets the list of modules.
+     *
+     * @param modules list of modules.
+     */
     public void setModules(ArrayList<Module> modules) {
         this.modules = modules;
     }
@@ -84,8 +109,7 @@ public class DegreeModule {
     }
 
     /**
-     * Adds a module to the module list Precondition: module has been created
-     * Post-conditions: modules is not empty
+     * Adds a module to the module list
      *
      * @param module the stored module
      */
@@ -97,8 +121,7 @@ public class DegreeModule {
     }
 
     /**
-     * Reads the API where most of the information is stored. Stores modules and
-     * courses to the current degree.
+     * Reading all the information of the target degree
      *
      * @throws IOException
      */
@@ -164,7 +187,7 @@ public class DegreeModule {
 
             // Creating a StudyModule object and storing it
             StudyModule studyModule = new StudyModule(addModuleName(studyModuleObject), studyModuleRules, courseArray);
-            rule.setStudyModules(studyModule);
+            rule.addStudyModules(studyModule);
         }
     }
 
@@ -320,7 +343,7 @@ public class DegreeModule {
         String jsonStrings = new String(url.openStream().readAllBytes(), "UTF-8");
         System.out.println(moduleGroupId);
         System.out.println(jsonStrings);
-        
+
         // Checks if the object is actually an object
         if (jsonStrings.equals("[]")) {
             return JsonParser.parseString(jsonStrings).getAsJsonObject();

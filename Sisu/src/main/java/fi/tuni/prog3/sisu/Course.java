@@ -1,7 +1,8 @@
 package fi.tuni.prog3.sisu;
 
 /**
- * This class stores information about specific course
+ * This class stores information about the Course
+ * @author xblong
  */
 public class Course {
     private final String courseName;
@@ -10,9 +11,9 @@ public class Course {
 
     /**
      * Constructor
-     * @param courseName Stores the name of the course
-     * @param courseCode Stores the code of the course
-     * @param credits Storest the amoun of credits
+     * @param courseName
+     * @param courseCode
+     * @param credits
      */
     public Course(String courseName, String courseCode, int credits) {
         this.courseName = courseName;
@@ -38,8 +39,8 @@ public class Course {
     }
 
     /**
-     * Gets the amount of credits
-     * @return credit amount
+     * Gets the course credits
+     * @return course credits
      */
     public int getCredits() {
         return credits;
