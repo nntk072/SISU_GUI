@@ -22,6 +22,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -36,6 +37,7 @@ import javafx.stage.Stage;
 public class Sisu extends Application {
 
     // Variables for status of program
+    TabPane tabPane = mainwindow();
     //Variables for displaying structure of studies
     private static TreeMap<String, String> degreeProgramme_list = new TreeMap<>();
     private static TreeMap<String, String> module_list = new TreeMap<>();
@@ -57,7 +59,7 @@ public class Sisu extends Application {
 
         //module = StudyModule.getModule();
         // Creating mainwindow.
-        TabPane tabPane = mainwindow();
+        tabPane = mainwindow();
 
         // import fxml files
         FXMLLoader fxmlLoginLoader = new FXMLLoader(Sisu.class.getResource("login.fxml"));
@@ -310,13 +312,6 @@ public class Sisu extends Application {
                     // Create the degreeModules
                     degreeModules = new DegreeModule(group_id_name, group_id, credits);
                     degreeModules.readAllDegree();
-                    System.out.println("haha");
-                    /*
-                    TreeView<String> treeView = (TreeView<String>) tabPane.lookup("#treeView");
-                    TreeItem<String> root = new TreeItem<>(degreeProgrammeChoiceBox.getValue());
-                    treeView.setRoot(root);
-                    */
-                    // Defining degreeModules
                 } catch (IOException ex) {
                     Logger.getLogger(Sisu.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -326,14 +321,6 @@ public class Sisu extends Application {
         //Continue with the moduleChoiceBox action
         moduleChoiceBox.setOnAction((ActionEvent event) -> {
             String module_id = null;
-            /* 
-            TreeView<String> treeView = (TreeView<String>) tabPane.lookup("#treeView");
-            TreeItem<String> root = new TreeItem<>(degreeProgrammeChoiceBox.getValue());
-            TreeItem<String> module = new TreeItem<>(moduleChoiceBox.getValue());
-            root.getChildren().add(module);
-            treeView.setRoot(root);
-             */
-
             // Find the group_id of the chosen from the degreeProgrammeChoiceBox
             String group_id = degreeProgramme_list.get(degreeProgrammeChoiceBox.getValue());
             // Check condition of moduleChoiceBox
@@ -343,21 +330,47 @@ public class Sisu extends Application {
                 try {
                     // Find the credits of the module_id
                     int credits = DegreeProgramme.getCredits(group_id);
-                    degreeModules = new DegreeModule(module_id, group_id, credits);
+                    String module_id_name = moduleChoiceBox.getValue();
+
+                    degreeModules = new DegreeModule(module_id_name, module_id, credits);
                     degreeModules.readAllDegree();
-                    System.out.println("hahi");
+                    System.out.println("Access the degree programs");
+                    // Get group_id_name
+                    String group_id_name = degreeProgrammeChoiceBox.getValue();
+
+                    // Add the group_id_name, credits into tree item
+                    TreeItem<String> rootOfDegree = new TreeItem<>(group_id_name + " (" + credits + " ECTS)");
+                    // Find the tree view based on looking up id
+                    TreeView<String> treeView = (TreeView<String>) tabPane.lookup("#treeView");
+                    // Add the rootItem to the treeView
+                    treeView.setRoot(rootOfDegree);
+                    // Set the rootOfDegree to be expanded
+                    rootOfDegree.setExpanded(true);
+                    // Create a list of TreeItem<Module> for each module of degreeModules
+                    var tree_item_module = degreeModules.getModules();
+                    // Set TreeItem for each module of degreeModules with the string as "Name xx credits" if it is a course, Name if it is a module
+                    var rootNode = new TreeItem<>(degreeModules.getName());
+                    for (var treeItem : tree_item_module) {
+                        TreeItem<String> moduleItem = new TreeItem<>(treeItem.getModuleName());
+                        for (var studyModuleItem : treeItem.getStudyModules()) {
+                            for (var courseItem : studyModuleItem.getCourses()) {
+                                TreeItem<String> course = new TreeItem<>(courseItem.getCourseName() + " (" + courseItem.getCredits() + " ECTS)");
+                                moduleItem.getChildren().add(course);
+                            }
+                        }
+                        rootNode.getChildren().add(moduleItem);
+                    }
+                    rootOfDegree.getChildren().add(rootNode);
+
                 } catch (IOException ex) {
                     Logger.getLogger(Sisu.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        });
-
-        // Check if degreeModules is also null or not
-        if (degreeModules != null) {
-            System.out.println("haha");
         }
+        );
         //Add everything to the gridpane
-        grid.getChildren().addAll(firstNameLabel, lastNameLabel, emailLabel, studentNumberLabel, startDateLabel, quitButton, degreeProgrammeLabel, degreeProgrammeChoiceBox, moduleLabel, moduleChoiceBox);
+        grid.getChildren()
+                .addAll(firstNameLabel, lastNameLabel, emailLabel, studentNumberLabel, startDateLabel, quitButton, degreeProgrammeLabel, degreeProgrammeChoiceBox, moduleLabel, moduleChoiceBox);
         //grid.getChildren().addAll(firstNameLabel, lastNameLabel, emailLabel, studentNumberLabel, startDateLabel, degreeProgrammeLabel, degreeProgrammeChoiceBox);
 
         //Add gridpane to the tab
@@ -390,5 +403,9 @@ public class Sisu extends Application {
         BorderPane.setAlignment(quitButton, Pos.TOP_RIGHT);
 
         tab.setContent(root);
+    }
+
+    void setup() {
+        TreeView<String> treeView = (TreeView<String>) tabPane.lookup("#treeView");
     }
 }
