@@ -403,9 +403,7 @@ public class Sisu extends Application {
                 }
             });
             rootNode.getChildren().add(moduleItem);
-
         }
         treeView.setRoot(rootNode);
-
     }
 }
