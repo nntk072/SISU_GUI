@@ -12,8 +12,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-
-
+import fi.tuni.prog3.sisu.Module;
 
 /**
  * An abstract class for storing information on Modules and Courses.
@@ -96,9 +95,20 @@ public class DegreeModule {
      * @throws IOException
      */
     public void readAllDegree() throws IOException {
-        readModule(this);
+        // Try- catch with readModule and readModule error
+        
+        try {
+            readModuleError(this);
+        } catch (IOException e) {
+            readModule(this);
+        }
         studyModuleRead();
-        courseRead(this);
+
+        try {
+            courseReadError(this);
+        } catch (IOException e) {
+            courseRead(this);
+        }
 
     }
 
@@ -112,6 +122,35 @@ public class DegreeModule {
 
         // Define the JsonObject of the degree 
         JsonObject degreeModuleObject = addModuleObject(degreeModule.getGroupId());
+
+        // Reaching the rules after CompositeRule
+        JsonArray moduleArray = new JsonArray();
+        JsonArray moduleRules = recursiveDegreeModule(degreeModuleObject, moduleArray);
+
+        // Passing all ComPositeRule, coming to the rules leading to ModuleRule
+        JsonArray tempModules = new JsonArray();
+        JsonArray modRules = recursiveModules(moduleRules, tempModules);
+
+        // Loops through all the modules in degree
+        for (JsonElement module : modRules) {
+
+            // Creating an array for studyModules
+            ArrayList<StudyModule> studyModules = new ArrayList<>();
+
+            // Creating a JsonObject of each Module
+            String moduleString = module.getAsJsonObject().get("moduleGroupId").getAsString();
+            JsonObject moduleObject = addModuleObject(moduleString);
+
+            Module element = new Module(addModuleName(moduleObject), moduleObject.get("id").getAsString(), studyModules);
+            // Adds the module to the degree
+            degreeModule.addModules(element);
+        }
+    }
+
+    public void readModuleError(DegreeModule degreeModule) throws IOException {
+
+        // Define the JsonObject of the degree 
+        JsonObject degreeModuleObject = addModuleObjectError(degreeModule.getGroupId());
 
         // Reaching the rules after CompositeRule
         JsonArray moduleArray = new JsonArray();
@@ -195,6 +234,37 @@ public class DegreeModule {
     }
 
     /**
+     * Reading the course 
+     * @param degree
+     * @throws IOException
+     */
+    public void courseReadError(DegreeModule degree) throws IOException {
+        // Loops through modules of the degree
+        for (Module module : degree.getModules()) {
+            for (StudyModule studyModule : module.getStudyModules()) {
+                // Leading to the list of course lists of modules according to the rules.
+                JsonArray tempCourses = new JsonArray();
+                var courses = recursiveCourses(studyModule.getModuleJsonArray(), tempCourses);
+
+                // Loops through courses
+                for (JsonElement course : courses) {
+                    // Creating a JsonObject
+                    String courseGroupID = course.getAsJsonObject().get("courseUnitGroupId").getAsString();
+                    JsonObject courseObject = addCourseObjectError(courseGroupID);
+
+                    String code = courseObject.getAsJsonObject().get("code").getAsString();
+                    int credits = courseObject.getAsJsonObject().get("credits").getAsJsonObject().get("min").getAsInt();
+
+                    // Creating a Course object and storing it
+                    Course createCourse = new Course(addModuleName(courseObject), code, credits);
+                    studyModule.addCourses(createCourse);
+                }
+
+            }
+        }
+    }
+
+    /**
      * Adding Course Object
      *
      * @param courseGroupID
@@ -203,6 +273,20 @@ public class DegreeModule {
      */
     private JsonObject addCourseObject(String courseGroupID) throws IOException {
         String courseURL = createCourseURL(courseGroupID);
+        URL url = new URL(courseURL);
+        JsonObject courseObject = createModuleObject(url);
+        return courseObject;
+    }
+
+    /**
+     * Adding Course Object
+     *
+     * @param courseGroupID
+     * @return
+     * @throws IOException
+     */
+    private JsonObject addCourseObjectError(String courseGroupID) throws IOException {
+        String courseURL = createCourseURLError(courseGroupID);
         URL url = new URL(courseURL);
         JsonObject courseObject = createModuleObject(url);
         return courseObject;
@@ -226,9 +310,17 @@ public class DegreeModule {
         } else {
             URL = "https://sis-tuni.funidata.fi/kori/api/modules/by-group-id?groupId=" + moduleGroupId + "&universityId=tuni-university-root-id";
         }
-
         // Return the URL string
         return URL;
+    }
+    
+    /**
+     * 
+     * @param moduleGroupId
+     * @return module link
+     */
+    private String createModuleURLError(String moduleGroupId) { 
+        return "https://sis-tuni.funidata.fi/kori/api/modules/by-group-id?groupId=" + moduleGroupId + "&universityId=tuni-university-root-id";
     }
 
     /**
@@ -247,9 +339,12 @@ public class DegreeModule {
         } else {
             URL = "https://sis-tuni.funidata.fi/kori/api/course-units/by-group-id?groupId=" + courseUnitId + "&universityId=tuni-university-root-id";
         }
-
         // Returns the URL string
         return URL;
+    }
+
+    private String createCourseURLError(String courseUnitId) {
+        return "https://sis-tuni.funidata.fi/kori/api/course-units/by-group-id?groupId=" + courseUnitId + "&universityId=tuni-university-root-id";
     }
 
     /**
@@ -260,7 +355,6 @@ public class DegreeModule {
      * @throws IOException
      */
     private JsonObject createModuleObject(URL url) throws IOException {
-
         // Creating a new JsonObject
         var moduleObject = new JsonObject();
         URLConnection request = url.openConnection();
@@ -410,6 +504,20 @@ public class DegreeModule {
      */
     public JsonObject addModuleObject(String moduleGroupId) throws IOException {
         String studyModuleURL = createModuleURL(moduleGroupId);
+        URL url = new URL(studyModuleURL);
+        JsonObject studyModuleObject = createModuleObject(url);
+        return studyModuleObject;
+    }
+
+    /**
+     * Returns the inside modules of the Module or Course.
+     *
+     * @param moduleGroupId
+     * @return inside Module
+     * @throws IOException
+     */
+    public JsonObject addModuleObjectError(String moduleGroupId) throws IOException {
+        String studyModuleURL = createModuleURLError(moduleGroupId);
         URL url = new URL(studyModuleURL);
         JsonObject studyModuleObject = createModuleObject(url);
         return studyModuleObject;

@@ -2,7 +2,6 @@ package fi.tuni.prog3.sisu;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,17 +39,15 @@ public class Sisu extends Application {
 
     // Variables for status of program
     TabPane tabPane = mainWindow();
+
     //Variables for displaying structure of studies
     private static TreeMap<String, String> degreeProgramme_list = new TreeMap<>();
 
     // Variables for displaying the structure of degrees
     private DegreeModule degreeModule = null;
 
-    // Variables for getting the condition of each module 
-    private HashMap<String, Object> courseCheckBoxes = new HashMap<>();
-    private ArrayList<CheckBox> checkboxArray = new ArrayList<>();
-    private ArrayList<DegreeModule> studyModule_list = null;
-    private ArrayList<DegreeProgramme> degreeProgramme_list2 = null;
+    // Variables for getting the condition of each module/course
+    private TreeMap<String, Integer> selectedCourses = new TreeMap<>();
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -147,6 +144,10 @@ public class Sisu extends Application {
         rightVBox.setPrefWidth(380);
         //rightVBox.setStyle("-fx-background-color: #b1c2d4;");
         rightVBox.setId("rightVBox");
+        //Add the label to represent the number of credits, which is the total value of the selectedCourses
+        Label creditsLabel = new Label("Credits: 0");
+        creditsLabel.setId("creditsLabel");
+        rightVBox.getChildren().add(creditsLabel);
 
         // Create a ListView for listing all the courses and their checkboxes in the logical way
         ListView<HBox> listView = new ListView<>();
@@ -345,35 +346,66 @@ public class Sisu extends Application {
      *
      */
     void setup(DegreeModule degreeModule) {
-
         //TreeItem<String> rootOfDegree = new TreeItem<>(group_id_name + " (" + credits + " ECTS)");
         TreeItem<String> rootOfDegree = new TreeItem<>(degreeModule.getName());
         TreeView<String> treeView = (TreeView<String>) tabPane.lookup("#treeView");
         ListView<HBox> listView = (ListView<HBox>) tabPane.lookup("#listView");
+        // Clear listView
+        listView.getItems().clear();
         treeView.setRoot(rootOfDegree);
         rootOfDegree.setExpanded(true);
 
         // Get the modules of the degreeModules
         ArrayList<Module> tree_item_module = degreeModule.getModules();
-
         // Set TreeItem for each module and course with the string as "Name xx credits" if it is a course, Name if it is a module
         var rootNode = new TreeItem<>(degreeModule.getName());
-        for (var treeItem : tree_item_module) {
+        // temp_List for checking if label exists
+        ArrayList<String> temp_List = new ArrayList<>();
+        for (Module treeItem : tree_item_module) {
             TreeItem<String> moduleItem = new TreeItem<>(treeItem.getModuleName());
-            for (StudyModule studyModuleItem : treeItem.getStudyModules()) {
+            treeItem.getStudyModules().forEach(studyModuleItem -> {
                 for (Course courseItem : studyModuleItem.getCourses()) {
                     TreeItem<String> course = new TreeItem<>(courseItem.getCourseName() + " (" + courseItem.getCredits() + " ECTS)");
                     moduleItem.getChildren().add(course);
                     HBox hbox = new HBox();
+
+                    Label label = new Label(courseItem.getCourseName() + " (" + courseItem.getCredits() + " ECTS)");
+                    label.setPadding(new Insets(0, 10, 0, 0));
+                    // Checking if label exists in temp_List
+                    if (temp_List.contains(courseItem.getCourseName())) {
+                        continue;
+                    } else {
+                        temp_List.add(courseItem.getCourseName());
+                    }
+                    /// Check courseItem area already in selectedCourses. If yes, return a checkBox with ticked already
                     CheckBox checkBox = new CheckBox();
                     checkBox.setPadding(new Insets(0, 10, 0, 0));
-                    Label label = new Label(courseItem.getCourseName() + " (" + courseItem.getCredits() + " ECTS)");
+                    // Check if courseItem name is in selectedCourses
+                    if (selectedCourses.containsKey(courseItem.getCourseName())) {
+                        checkBox.setSelected(true);
+                    }
+
+                    // Add the event handler for the checkBox
+                    checkBox.setOnAction((ActionEvent event) -> {
+                        if (checkBox.isSelected()) {
+                            selectedCourses.put(courseItem.getCourseName(), courseItem.getCredits());
+                            Label creditsLabel = (Label) tabPane.lookup("#creditsLabel");
+                            creditsLabel.setText("Credits: " + selectedCourses.values().stream().mapToInt(Integer::intValue).sum());
+                        } else {
+                            selectedCourses.remove(courseItem.getCourseName());
+                            Label creditsLabel = (Label) tabPane.lookup("#creditsLabel");
+                            creditsLabel.setText("Credits: " + selectedCourses.values().stream().mapToInt(Integer::intValue).sum());
+                        }
+                    });
+
                     hbox.getChildren().addAll(checkBox, label);
                     listView.getItems().add(hbox);
                 }
-            }
+            });
             rootNode.getChildren().add(moduleItem);
+
         }
         treeView.setRoot(rootNode);
+
     }
 }

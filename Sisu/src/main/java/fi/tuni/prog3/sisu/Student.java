@@ -10,8 +10,8 @@ public class Student implements iReadAndWriteToFile {
     // Store all the course information of each student
     private final int studentNumber;
     private DegreeModule degreeModule;
-    private ArrayList <DegreeModule> degreeModules;
-    private ArrayList <FinishCourse> finishCourse;
+    private final ArrayList <DegreeModule> degreeModules;
+    private ArrayList <Course> finishCourse;
 
     /**
      * Constructor
@@ -19,7 +19,7 @@ public class Student implements iReadAndWriteToFile {
      * @param degreeModules
      * @param finishCourse
      */
-    public Student(int student_number, ArrayList <DegreeModule> degreeModules, ArrayList<FinishCourse> finishCourse) {
+    public Student(int student_number, ArrayList <DegreeModule> degreeModules, ArrayList<Course> finishCourse) {
         this.studentNumber = student_number;
         this.degreeModules = degreeModules;
         this.finishCourse = finishCourse;
@@ -53,7 +53,7 @@ public class Student implements iReadAndWriteToFile {
      * Get the finished course lists
      * @return finished course lists
      */
-    public ArrayList<FinishCourse> getFinishCourse() {
+    public ArrayList<Course> getFinishCourse() {
         return finishCourse;
     }
 
@@ -67,9 +67,9 @@ public class Student implements iReadAndWriteToFile {
 
     /**
      * Set the degree module lists
-     * @param degreeModules 
+     * @param finishCourse
      */
-    public void setFinishCourse(ArrayList<FinishCourse> finishCourse) {
+    public void setFinishCourse(ArrayList<Course> finishCourse) {
         this.finishCourse = finishCourse;
     }    
 
