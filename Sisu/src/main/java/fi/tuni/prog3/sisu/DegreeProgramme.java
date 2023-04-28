@@ -7,15 +7,11 @@ package fi.tuni.prog3.sisu;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.TreeMap;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
-import static fi.tuni.prog3.sisu.DegreeModule.addModuleName;
-import static fi.tuni.prog3.sisu.DegreeModule.addModuleObject;
 
 /**
  *
@@ -39,7 +35,7 @@ public class DegreeProgramme {
      */
     public static TreeMap<String, String> getDegreeProgramme_list() throws MalformedURLException, IOException {
         degreeProgrammeTreeMap.clear();
-        
+
         String urlString = "https://sis-tuni.funidata.fi/kori/api/module-search?curriculumPeriodId=uta-lvv-2021&universityId=tuni-university-root-id&moduleType=DegreeProgramme&limit=1000";
         URL url = new URL(urlString);
         String jsonStrings = new String(url.openStream().readAllBytes(), "UTF-8");
@@ -59,45 +55,40 @@ public class DegreeProgramme {
         return degreeProgrammeTreeMap;
     }
 
-    /**
-     * Get the module list from sis-tuni.funidata.fi of the degreeProgramme
-     *
-     * @param group_id
-     * @return
-     * @throws MalformedURLException
-     * @throws IOException
-     */
-    public static TreeMap<String, String> getModule(String group_id) throws MalformedURLException, IOException {
-        degreeModuleTreeMap.clear();
-        ArrayList<String> degreeModuleList = new ArrayList<>();
-        JsonObject jsonDegree = addModuleObject(group_id);
-
-        // Get the moduleGroupID in the rules
-        JsonArray jsonArray = jsonDegree.getAsJsonObject("rule").getAsJsonArray("rules");
-        if (jsonArray == null) {
-            return null;
-        }
-        // Add the moduleGroupID into degreeModuleList
-        for (int i = 0; i < jsonArray.size(); i++) {
-            String moduleGroupID = jsonArray.get(i).getAsJsonObject().get("moduleGroupId").getAsString();
-            degreeModuleList.add(moduleGroupID);
-        }
-
-        if (degreeModuleList.isEmpty()) {
-            return null;
-        }
-
-        // Add the moduleGroupID into degreeModuleTreeMap
-        for (int i = 0; i < degreeModuleList.size(); i++) {
-            JsonObject jsonModule = addModuleObject(degreeModuleList.get(i));
-            String moduleName = addModuleName(jsonModule);
-            String moduleGroupId = degreeModuleList.get(i);
-
-            degreeModuleTreeMap.put(moduleName, moduleGroupId);
-        }
-        return degreeModuleTreeMap;
-    }
-
+    // /**
+    //  * Get the module list from sis-tuni.funidata.fi of the degreeProgramme
+    //  *
+    //  * @param group_id
+    //  * @return
+    //  * @throws MalformedURLException
+    //  * @throws IOException
+    //  */
+    // public static TreeMap<String, String> getModule(String group_id) throws MalformedURLException, IOException {
+    //     degreeModuleTreeMap.clear();
+    //     ArrayList<String> degreeModuleList = new ArrayList<>();
+    //     JsonObject jsonDegree = addModuleObject(group_id);
+    //     // Get the moduleGroupID in the rules
+    //     JsonArray jsonArray = jsonDegree.getAsJsonObject("rule").getAsJsonArray("rules");
+    //     if (jsonArray == null) {
+    //         return null;
+    //     }
+    //     // Add the moduleGroupID into degreeModuleList
+    //     for (int i = 0; i < jsonArray.size(); i++) {
+    //         String moduleGroupID = jsonArray.get(i).getAsJsonObject().get("moduleGroupId").getAsString();
+    //         degreeModuleList.add(moduleGroupID);
+    //     }
+    //     if (degreeModuleList.isEmpty()) {
+    //         return null;
+    //     }
+    //     // Add the moduleGroupID into degreeModuleTreeMap
+    //     for (int i = 0; i < degreeModuleList.size(); i++) {
+    //         JsonObject jsonModule = addModuleObject(degreeModuleList.get(i));
+    //         String moduleName = addModuleName(jsonModule);
+    //         String moduleGroupId = degreeModuleList.get(i);
+    //         degreeModuleTreeMap.put(moduleName, moduleGroupId);
+    //     }
+    //     return degreeModuleTreeMap;
+    // }
     /**
      * Get the course/module targetCredits
      *
@@ -113,6 +104,36 @@ public class DegreeProgramme {
                 .get("targetCredits").getAsJsonObject()
                 .get("min").getAsInt();
         return minCredits;
+    }
+
+    /**
+     * Returns the inside modules of the Module or Course.
+     *
+     * @param module_id
+     * @return inside Module
+     * @throws UnsupportedEncodingException
+     * @throws IOException
+     */
+    public static JsonObject addModuleObject(String module_id) throws IOException {
+        //String urlString = checkLink(module_id);
+        String urlString = "https://sis-tuni.funidata.fi/kori/api/modules/by-group-id?groupId="
+                + module_id + "&universityId=tuni-university-root-id";
+        URL url = new URL(urlString);
+
+        String jsonStrings = new String(url.openStream().readAllBytes(), "UTF-8");
+        //System.out.println(jsonStrings);
+        System.out.println(module_id);
+        System.out.println(jsonStrings);
+
+        //JsonObject jsonModule = JsonParser.parseString(jsonStrings).getAsJsonArray().get(0).getAsJsonObject();
+        // Check if JsonObject jsonModule = JsonParser.parseString(jsonStrings).getAsJsonArray().get(0).getAsJsonObject(); success, if not moduleObject = element.getAsJsonObject();
+        JsonObject jsonModule = null;
+        try {
+            jsonModule = JsonParser.parseString(jsonStrings).getAsJsonArray().get(0).getAsJsonObject();
+        } catch (Exception e) {
+            jsonModule = null;
+        }
+        return jsonModule;
     }
 
 }

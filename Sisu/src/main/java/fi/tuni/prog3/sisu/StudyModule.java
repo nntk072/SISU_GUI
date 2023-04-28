@@ -1,9 +1,9 @@
 package fi.tuni.prog3.sisu;
 
-import com.google.gson.JsonArray;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.gson.JsonArray;
 
 /**
  * This class stores information about individual study module
@@ -60,7 +60,7 @@ public class StudyModule {
      *
      * @param course wanted course to be added
      */
-    public void setCourses(Course course) {
+    public void addCourses(Course course) {
         this.courses.add(course);
     }
 

@@ -74,13 +74,21 @@ public class Student implements iReadAndWriteToFile {
     }    
 
     @Override
-    public boolean readFromFile(String fileName) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public DegreeModule readFromFile(String fileName) throws Exception {
+        // Check if fileName is the same as studentNumber
+        // if (fileName.equals(Integer.toString(studentNumber))) {
+        //     // Read JSON File with filename
+        // }
+        // else {
+        //     throw new Exception("File name is not the same as student number");
+
+        return null;
+
     }
 
     @Override
     public boolean writeToFile(String fileName) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return false;
     }
     
         

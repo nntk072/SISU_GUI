@@ -18,7 +18,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
@@ -42,10 +42,9 @@ public class Sisu extends Application {
     TabPane tabPane = mainWindow();
     //Variables for displaying structure of studies
     private static TreeMap<String, String> degreeProgramme_list = new TreeMap<>();
-    private static TreeMap<String, String> module_list = new TreeMap<>();
 
     // Variables for displaying the structure of degrees
-    private DegreeModule degreeModules = null;
+    private DegreeModule degreeModule = null;
 
     // Variables for getting the condition of each module 
     private HashMap<String, Object> courseCheckBoxes = new HashMap<>();
@@ -257,90 +256,54 @@ public class Sisu extends Application {
         GridPane.setConstraints(degreeProgrammeLabel, 1, 0);
 
         // Add the choice box for the degree selection
-        ChoiceBox<String> degreeProgrammeChoiceBox = new ChoiceBox<>();
-        GridPane.setConstraints(degreeProgrammeChoiceBox, 1, 1);
+        ComboBox<String> degreeProgrammeComboBox = new ComboBox<>();
+        GridPane.setConstraints(degreeProgrammeComboBox, 1, 1);
         // Add the items to the choice box
-        degreeProgrammeChoiceBox.getItems().addAll(degreeProgramme_list.keySet());
-        degreeProgrammeChoiceBox.setId("degreeProgrammeChoiceBox");
-        degreeProgrammeChoiceBox.setMaxWidth(300);
+        degreeProgrammeComboBox.getItems().addAll(degreeProgramme_list.keySet());
+        degreeProgrammeComboBox.setId("degreeProgrammeComboBox");
+        degreeProgrammeComboBox.setMaxWidth(300);
 
         // Labels for choosing the module
         Label moduleLabel = new Label("Choosing your module/track:");
         moduleLabel.setFont(new Font(20));
         GridPane.setConstraints(moduleLabel, 1, 2);
 
-        // Add choiceBox for module/track selection
-        ChoiceBox<String> moduleChoiceBox = new ChoiceBox<>();
-        moduleChoiceBox.setMaxWidth(300);
-        moduleChoiceBox.setId("moduleChoiceBox");
-        moduleChoiceBox.setDisable(true);
-        moduleChoiceBox.setId("moduleChoiceBox");
-        GridPane.setConstraints(moduleChoiceBox, 1, 3);
+        // Add ComboBox for module/track selection
+        ComboBox<String> moduleComboBox = new ComboBox<>();
+        moduleComboBox.setMaxWidth(300);
+        //moduleComboBox.setDisable(true);
+        moduleComboBox.setId("moduleComboBox");
+        GridPane.setConstraints(moduleComboBox, 1, 3);
 
         // Add the items to the choice box
-        degreeProgrammeChoiceBox.setOnAction((event) -> {
-            // Clear the moduleChoiceBox
-            moduleChoiceBox.getItems().clear();
+        degreeProgrammeComboBox.setOnAction((event) -> {
+            // Clear the moduleComboBox
+            moduleComboBox.getItems().clear();
+            moduleComboBox.setValue(null);
             // Find the group_id of the degree
-            String group_id = degreeProgramme_list.get(degreeProgrammeChoiceBox.getValue());
-
+            String group_id = degreeProgramme_list.get(degreeProgrammeComboBox.getValue());
             try {
-                module_list = DegreeProgramme.getModule(group_id);
+                int credits = DegreeProgramme.getCredits(group_id);
+                degreeModule = new DegreeModule(degreeProgrammeComboBox.getValue(), group_id, credits);
+                degreeModule.readAllDegree();
+                //ArrayList<Module> track = degreeModule.getModules();
+                // for (Module module : track) {
+                //     moduleComboBox.getItems().add(module.getModuleName());
+                //}
+                setup(degreeModule);
             } catch (IOException ex) {
                 Logger.getLogger(Sisu.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-            // Check if module_list is null
-            if (module_list != null) {
-                // Add the module and track to the moduleChoiceBox
-                moduleChoiceBox.getItems().addAll(module_list.keySet());
-                moduleChoiceBox.setDisable(false);
-            } else {
-                moduleChoiceBox.setValue(null);
-                moduleChoiceBox.setDisable(true);
-                // Read the minCredits, name of the degree
-                String group_id_name = degreeProgramme_list.get(degreeProgrammeChoiceBox.getValue());
-                try {
-                    int credits = DegreeProgramme.getCredits(group_id);
-
-                    // Create the degreeModules
-                    degreeModules = new DegreeModule(group_id_name, group_id, credits);
-                    degreeModules.readAllDegree();
-                } catch (IOException ex) {
-                    Logger.getLogger(Sisu.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
         });
 
-        moduleChoiceBox.setOnAction((ActionEvent event) -> {
-            String module_id = null;
-            String group_id = degreeProgramme_list.get(degreeProgrammeChoiceBox.getValue());
-            String group_id_name = degreeProgrammeChoiceBox.getValue();
-
-            if (moduleChoiceBox.getValue() != null) {
-                module_id = module_list.get(moduleChoiceBox.getValue());
-                int credits = 0;
-                String module_id_name = moduleChoiceBox.getValue();
-                degreeModules = new DegreeModule(module_id_name, module_id, credits);
-                try {
-                    credits = DegreeProgramme.getCredits(group_id);
-                    degreeModules.readAllDegree();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                //System.out.println("Access the degree program");
-                setup(module_id, module_id_name, group_id, group_id_name, credits, degreeModules);
-
-            }
+        moduleComboBox.setOnAction((ActionEvent event) -> {
         }
         );
 
         gridPane.getChildren()
-                .addAll(firstNameLabel, lastNameLabel, emailLabel, studentNumberLabel, startDateLabel, quitButton, degreeProgrammeLabel, degreeProgrammeChoiceBox, moduleLabel, moduleChoiceBox);
-        //grid.getChildren().addAll(firstNameLabel, lastNameLabel, emailLabel, studentNumberLabel, startDateLabel, degreeProgrammeLabel, degreeProgrammeChoiceBox);
+                .addAll(firstNameLabel, lastNameLabel, emailLabel, studentNumberLabel, startDateLabel, quitButton, degreeProgrammeLabel, degreeProgrammeComboBox, moduleLabel, moduleComboBox);
+        //grid.getChildren().addAll(firstNameLabel, lastNameLabel, emailLabel, studentNumberLabel, startDateLabel, degreeProgrammeLabel, degreeProgrammeComboBox);
         tab.setContent(gridPane);
-
     }
 
     /**
@@ -378,26 +341,23 @@ public class Sisu extends Application {
      * @param group_id
      * @param group_id_name
      * @param credits
-     * @param degreeModules2
+     * @param degreeModule
      *
      */
-    void setup(String module_id, String module_id_name, String group_id, String group_id_name, int credits, DegreeModule degreeModules2) {
+    void setup(DegreeModule degreeModule) {
 
-        TreeItem<String> rootOfDegree = new TreeItem<>(group_id_name + " (" + credits + " ECTS)");
+        //TreeItem<String> rootOfDegree = new TreeItem<>(group_id_name + " (" + credits + " ECTS)");
         TreeView<String> treeView = (TreeView<String>) tabPane.lookup("#treeView");
         ListView<HBox> listView = (ListView<HBox>) tabPane.lookup("#listView");
-        treeView.setRoot(rootOfDegree);
-        rootOfDegree.setExpanded(true);
-
-        // Get the modules of the degreeModules
-        ArrayList<Module> tree_item_module = degreeModules.getModules();
-
+        listView.getItems().clear();
+        // Get the modules of the degreeModule
+        ArrayList<Module> tree_item_module = degreeModule.getModules();
         // Set TreeItem for each module and course with the string as "Name xx credits" if it is a course, Name if it is a module
-        var rootNode = new TreeItem<>(degreeModules.getName());
-        for (var treeItem : tree_item_module) {
+        TreeItem<String> rootNode = new TreeItem<>(degreeModule.getName());
+        for (Module treeItem : tree_item_module) {
             TreeItem<String> moduleItem = new TreeItem<>(treeItem.getModuleName());
-            for (var studyModuleItem : treeItem.getStudyModules()) {
-                for (var courseItem : studyModuleItem.getCourses()) {
+            for (StudyModule studyModuleItem : treeItem.getStudyModules()) {
+                for (Course courseItem : studyModuleItem.getCourses()) {
                     TreeItem<String> course = new TreeItem<>(courseItem.getCourseName() + " (" + courseItem.getCredits() + " ECTS)");
                     moduleItem.getChildren().add(course);
                     HBox hbox = new HBox();
@@ -410,6 +370,6 @@ public class Sisu extends Application {
             }
             rootNode.getChildren().add(moduleItem);
         }
-        rootOfDegree.getChildren().add(rootNode);
+        treeView.setRoot(rootNode);
     }
 }
