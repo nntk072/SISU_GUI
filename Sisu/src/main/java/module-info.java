@@ -6,6 +6,6 @@ module fi.tuni.prog3.sisu {
     requires org.testfx;
 
     opens fi.tuni.prog3.sisu to javafx.fxml;
-    opens org.junit.jupiter.api;
+//    opens org.junit.jupiter.api;
     exports fi.tuni.prog3.sisu;
 }
