@@ -347,16 +347,17 @@ public class Sisu extends Application {
     void setup(DegreeModule degreeModule) {
 
         //TreeItem<String> rootOfDegree = new TreeItem<>(group_id_name + " (" + credits + " ECTS)");
+        TreeItem<String> rootOfDegree = new TreeItem<>(degreeModule.getName());
         TreeView<String> treeView = (TreeView<String>) tabPane.lookup("#treeView");
         ListView<HBox> listView = (ListView<HBox>) tabPane.lookup("#listView");
         treeView.setRoot(rootOfDegree);
         rootOfDegree.setExpanded(true);
 
         // Get the modules of the degreeModules
-        ArrayList<Module> tree_item_module = degreeModules.getModules();
+        ArrayList<Module> tree_item_module = degreeModule.getModules();
 
         // Set TreeItem for each module and course with the string as "Name xx credits" if it is a course, Name if it is a module
-        var rootNode = new TreeItem<>(degreeModules.getName());
+        var rootNode = new TreeItem<>(degreeModule.getName());
         for (var treeItem : tree_item_module) {
             TreeItem<String> moduleItem = new TreeItem<>(treeItem.getModuleName());
             for (StudyModule studyModuleItem : treeItem.getStudyModules()) {
