@@ -1,2 +1,4 @@
 /Sisu/target/
 /Sisu/nbproject/
+.vscode/
+__pycache__/
